@@ -4,7 +4,7 @@ import { getTableData } from './getTableData';
 export async function generateStaticPaths() {
   const data = await getTableData();
   const sortedPosts = data.sort(
-    (a, b) =>
+    (a: any, b: any) =>
       new Date(b.date.created).valueOf() -
       new Date(a.date.created).valueOf()
   )

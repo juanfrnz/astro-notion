@@ -25,10 +25,23 @@ type tableProps = {
   includeDraft?: boolean;
 };
 
+type PageMetaData = {
+  id: string;
+  url: string;
+  date: {
+    created: string;
+    edited: string;
+  };
+  properties: {
+    title: number;
+    slug: string;
+  };
+};
+
 // Takes props for filtering options
 // Returns contents in the database
 // by default, it does not include the draft posts
-export async function getTableData(
+export async function getTableData<T extends PageMetaData> (
   props: tableProps = { includeDraft: false }
 ) {
   try {
@@ -57,25 +70,12 @@ export async function getTableData(
   }
 }
 
-type pageMetaData = {
-  id: string;
-  url: string;
-  date: {
-    created: string;
-    edited: string;
-  };
-  properties: {
-    title: number;
-    slug: string;
-  };
-};
-
-function cleanTableData(data): pageMetaData[] | [] {
+function cleanTableData<T extends PageMetaData>(data): T[] | [] {
   if (!data) {
     return [];
   }
 
-  const cleanedData = data.map((page): pageMetaData => {
+  const cleanedData = data.map((page) => {
     const { id, created_time, last_edited_time, properties, url } = page;
 
     return {
@@ -85,6 +85,7 @@ function cleanTableData(data): pageMetaData[] | [] {
       properties: {
         title: getPlainText(properties?.title),
         slug: getPlainText(properties?.slug),
+        ...properties
       },
     };
   });
